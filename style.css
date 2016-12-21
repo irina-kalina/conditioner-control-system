@@ -1,0 +1,88 @@
+.main{
+	border:2px solid #DCDCDC;
+	background-color: #F5F5F5;
+	margin: 2%;
+}
+.clearfix:after{
+	content: '';
+	display: table;
+	clear: both;
+}
+
+.radio, .radio>label{
+	padding: 1% 2%;
+	text-align: center;
+}
+
+.range{
+	padding: 1%;
+	text-align: center;
+}
+
+.range> div{
+	min-height: 70px; 
+}
+
+.dateRange{
+	margin: auto;
+	text-align: center;
+	
+}
+
+.dateBox{
+		padding-bottom: 5%;
+}
+
+.messageBox, .tInput{
+	text-align: left;
+}
+
+.lab{
+	text-align: right;
+}
+
+.temperature{
+	padding-bottom: 1%;
+	text-align: center;
+}
+
+#add{
+	margin: 2%;
+}
+
+.dateTable{
+	padding: 1%;
+	text-align: center;
+}
+
+#container{
+	margin: 2% auto;
+	width: 70%;
+	height: 300px;
+	border: 2px solid #DCDCDC;
+}
+
+
+
+div.errorMsg {	
+	color: red;
+	position: absolute;
+}
+
+#ui-datepicker-div{
+	background-color: #DCDCDC;
+}
+
+.invalidElem {
+	border: medium solid red;
+}
+
+table{
+	width: 80%;
+}
+
+input{
+	border-radius: 5px;
+	border:1px solid #DCDCDC;
+	margin:0 1%;
+}
