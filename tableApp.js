@@ -1,19 +1,31 @@
 var myChart =null;
 
 (function(){
-	var app = angular.module('conditioner', ['ngStorage']);
-	app.controller('ConditionerController', function($scope, $localStorage) {
+	var app = angular.module('conditioner', ['ngStorage', 'firebase']);
+	app.controller('ConditionerController', function($scope, $localStorage, $firebaseArray, $firebase) {
 		$scope.radioT = 'C';
 		$scope.inform = {};
 		$scope.informs = [];
 		var temperature = {};
+		var l = 0;
+		var ref = new Firebase("https://fbapp-4aacc.firebaseio.com/conditioner");
 
+		$scope.messages = $firebaseArray(ref);
+
+		$scope.$watch('messages.length', function(newValue, oldValue) {
+		
+			  if(newValue < oldValue){
+			  	//location.reload();
+			  }
+		});
+		
+		
 		$scope.addToTable = function(minTempr, maxTempr, radioT, setTempr, dateFrom, dateTo ) {
 			$('#temprForm').validate().form();
 			
 			$scope.inform = {
-				from: dateFrom,
-				to: dateTo,
+				from: document.getElementById('dateFrom').value,
+				to:  document.getElementById('dateTo').value,
 				min: +document.getElementById('minT').value,
 				max: +document.getElementById('maxT').value,
 				radio: radioT,
@@ -24,84 +36,71 @@ var myChart =null;
 			if(minTempr == undefined || maxTempr == undefined || setTempr == undefined || dateFrom == undefined || dateTo == undefined) {
 				return false;
 			} else {
+				//console.log($scope.messages.length)
+				$scope.messages.$add($scope.inform);
+				$scope.informs = $scope.messages;
 				
-				$scope.informs.push($scope.inform);
 
-				var df = document.getElementById('dateFrom').value;
-				var dt = document.getElementById('dateTo').value;
-				var msF = Date.parse(df);
-				var msT = Date.parse(dt);
-				var dayFrom = moment(msF);
-				var dayTo = moment(msT);
-				var diff = dayTo.diff(dayFrom,'days');
-				var min = +$('#minT').val();
-				var max = +$('#maxT').val();
-			    var setTempr = +$('#setT').val();
-
-				temperature = {
-					"min" : [],
-					"max" : [],
-					"setTempr" : []
-				};
-				    
-				for(var i = 0; i <= diff; i++) {
-				    dayFrom.add(1,'day');
-				   	temperature.max.push([dayFrom.valueOf(), max]);
-				    temperature.min.push([dayFrom.valueOf(), min]);
-				    temperature.setTempr.push([dayFrom.valueOf(), setTempr]);
-					 
-				}
-
-				myChart.addSeries({
-				    name: 'min',
-				    data: temperature.min
-				}, false);
-
-			    myChart.addSeries({
-				    name: 'max',
-				    data: temperature.max
-				}, false);
-
-				myChart.addSeries({
-				    name: 'set',
-				    data: temperature.setTempr
-				}, false);
-
-				myChart.redraw();
-
-				function isLocalStorageAvailable() {
-				    try {
-					        return 'localStorage' in window && window['localStorage'] !== null;
-					    } catch (e) {
-						    return false;
-					    }
-				}
-
-				localStorage.setItem('tableData', JSON.stringify($scope.informs));
-
+				
 			}
-
+	
 		};
-
-		var socket = io.connect('http://localhost:8008');
-
-		$('form').submit(function() {
-       		socket.emit('message', $scope.inform);
-
-      	});
-
-      	socket.on('message', function(msg) {
-
-		  	$scope.informs.push(msg);
-		  	location.reload();   
+		ref.limitToLast(1).on('child_added', function(snapshot) {
+			$scope.redrawCh(snapshot.val())
+		});
+		ref.on('child_removed', function(snapshot) {
+			location.reload();
 			
 		});
 
-		$scope.redrawCh = function(msg) {
+		
+		$scope.deleteRow = function(event){
 
+			event = event || window.event;
+			event.preventDefault();
+			
+			var item = $scope.messages[this.$index];
+			myChart.series[this.$index].remove()
+			$scope.messages.$remove(item).then(function(ref) {
+			  ref.key() === item.$id; // true
+			  
+
+			});
+
+		}
+
+		$scope.loadStorage = function() {
+			
+			$scope.informs = $scope.messages;
+			$scope.messages.$loaded().then(function(x) {
+			$scope.storage = $scope.messages;
+			var arr = [];
+		   	for(var key in $scope.storage) {
+		   		if(typeof ($scope.storage[key]) =='object' ){
+		   			arr.push($scope.storage[key])
+		   			
+		   		}
+
+			}
+
+			for(var i = 0; i < arr.length-1;i++){
+				$scope.redrawCh(arr[i]);	
+			}
+				return $scope.storage;
+		  })
+		  .catch(function(error) {
+		    console.log("Error:", error);
+		  });
+
+		};
+
+		
+		$scope.redrawCh = function(msg) {
+			
 			var chartMsg = {};
-			var msF = Date.parse(msg.from);
-			var msT = Date.parse(msg.to);
+			var msF = Date.parse(msg.from) +15000000;
+			var msT = Date.parse(msg.to)  +15000000;
+
 			var dayFrom = moment(msF);
 			var dayTo = moment(msT);
 			var diff = dayTo.diff(dayFrom,'days');
@@ -112,11 +111,11 @@ var myChart =null;
 				"set" : []
 			}
 			for(var i = 0; i <= diff; i++) {
-				dayFrom.add(1,'day');   	
+				  	
 				chartMsg.max.push([dayFrom.valueOf(), msg.max]);
 			    chartMsg.min.push([dayFrom.valueOf(), msg.min]);
 			    chartMsg.set.push([dayFrom.valueOf(), msg.set]);
-				    
+				dayFrom.add(1,'day');    
 			}
 
 			myChart.addSeries({
@@ -137,24 +136,13 @@ var myChart =null;
 			myChart.redraw();
  
 		};
-
-		$scope.loadStorage = function() {
-			
-			$scope.storage = JSON.parse(localStorage.getItem('tableData')) || [];
-			$scope.informs = $scope.informs.concat($scope.storage);
-
-			for(var key in $scope.informs) {
-				$scope.redrawCh($scope.informs[key]);
-			}
-			return $scope.storage;
 		
-		};
-
 		myChart = Highcharts.chart('container', {
 		           
 		    title: {
 		        text: 'Temperature Chart'
 		   },
+		   
 		           
 		    xAxis: {
 		         type: 'datetime'

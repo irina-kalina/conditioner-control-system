@@ -1,6 +1,7 @@
 .main{
 	border:2px solid #DCDCDC;
 	background-color: #F5F5F5;
+	min-height: 1000px;
 	margin: 2%;
 }
 .clearfix:after{
@@ -85,4 +86,5 @@ input{
 	border-radius: 5px;
 	border:1px solid #DCDCDC;
 	margin:0 1%;
+
 }
