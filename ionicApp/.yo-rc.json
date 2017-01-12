@@ -1,0 +1,16 @@
+{
+  "generator-m-ionic": {
+    "answers": {
+      "appName": "HelloCordova",
+      "appId": "com.company.HelloCordova",
+      "ionicCss": true,
+      "bowerPackages": [],
+      "platforms": [
+        "android"
+      ],
+      "plugins": [],
+      "appModule": "HelloCordova",
+      "ecosystems": []
+    }
+  }
+}

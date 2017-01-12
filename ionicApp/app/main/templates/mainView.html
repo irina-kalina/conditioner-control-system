@@ -1,0 +1,98 @@
+<ion-view view-title="MAIN">
+
+	<div  class="main" ng-app="HelloCordova" ng-controller="myAppCtrl" ng-init="loaded()">
+	<div id="wrapper">
+		<form id="temprForm" >
+       
+            <div class="radio">
+                <label>
+                    <input type="radio" ng-model="radioT" name="radioBtn" id="radio1" value="C"  checked> C
+                </label>
+                <label >
+                    <input type="radio" ng-model="radioT" name="radioBtn" id="radio2" value="F"  > F
+                </label>
+        
+            </div>
+            <div  id="range" class="tRange">
+            	<div class="dateBox col-md-6 col-sm-12 col-xs-12">
+                    <label for="minT" class="lab col-md-6 col-sm-4 col-xs-12"  >MIN TEMPERATURE:</label>
+                    <div class="tInput col-md-6 col-sm-8 col-xs-12" id="messageBoxF ">
+                        <input id="minT" ng-model="minTempr"  pattern="^[-,+]?\d+\.?\d*$" required />
+                    </div>
+                </div>
+                <div class="dateBox col-md-6 col-sm-12 col-xs-12">
+                    <label for="maxT" class="lab col-md-6 col-sm-4 col-xs-12"  >MAX TEMPERATURE:</label>
+                    <div class="tInput col-md-6 col-sm-8 col-xs-12" id="messageBoxF ">
+                        <input id="maxT" ng-model="maxTempr" pattern="^\d+\.?\d*$" required  />
+                    </div>
+                </div>
+                <div class="dateBox col-md-6 col-sm-12 col-xs-12">
+                    <label for="setT" class="lab col-md-6 col-sm-4 col-xs-12"  >SET TEMPERATURE:</label>
+                    <div class="tInput col-md-6 col-sm-8 col-xs-12" id="messageBoxF ">
+                        <input id="setT" ng-model="setTempr" min="#minT" max="#maxT" pattern="^[-,+]?\d+\.?\d*$" required  />
+                    </div>
+                </div>
+            </div>
+           
+            <div class="dateRange " id="time">
+                <div class="dateBox col-md-6 col-sm-12 col-xs-12">
+                    <label for="dateFrom" class="lab col-md-6 col-sm-4 col-xs-12"  >DATE FROM:</label>
+                    <div class="messageBox col-md-6 col-sm-8 col-xs-12" id="messageBoxF ">
+                        <input class="calendar" ng-model="dateFrom" id="dateFrom" dateT="dateTo"  required size="15" type="date" />
+                    </div>
+                </div>
+
+                <div class="dateBox col-md-6 col-sm-12 col-xs-12">
+                    <label for="dateTo" class="lab col-md-3 col-sm-4 col-xs-12">DATE TO:</label>
+                    <div class="messageBox col-md-6 col-sm-8 col-xs-8" id="messageBoxTo ">
+                        <input class="calendar" ng-model="dateTo" id="dateTo"  dateF="dateFrom" required size="15" type="date"/>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="temperature col-md-12 col-sm-12 col-xs-12" id="T">
+                
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <button class="btn btn-info" id="add" ng-click="addToTable(minTempr, maxTempr, radioT, setTempr, dateFrom, dateTo)">ADD TO TABLE</button>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="dateTable" >
+                <table id="table1" class="table table-striped table-bordered" ng-init="loadStorage()">
+                    <thead>
+                        <tr class="tableInf">
+                            <td>FROM</td>
+                            <td>TO</td>
+                            <td>MIN</td>
+                            <td>MAX</td>
+                            <td>SET</td>
+                            <td>C/F</td>
+                            <td>DEL</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="inform in informs track by $index">
+                            <td>{{ inform.from }}</td>
+                            <td>{{ inform.to }}</td>
+                            <td>{{ inform.min }}</td>
+                            <td>{{ inform.max }}</td>
+                            <td>{{ inform.set }}</td>
+                            <td>{{ inform.radio }}</td>
+                            <td><button class="btn btn-danger btn-xs" ng-click="deleteRow()">X</button></td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+                <div class="clearfix"></div>
+            </div>
+            <div id="container" >
+                <h2>Temperature Chart</h2>
+            </div>
+        </form>
+	</div>
+        
+        
+    </div>
+
+</ion-view>
